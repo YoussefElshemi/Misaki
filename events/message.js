@@ -10,8 +10,7 @@ module.exports = class {
     if (message.author.bot || !message.guild) return;
     if (!message.channel.permissionsFor(message.guild.me).has("SEND_MESSAGES")) return;
     
-    const defaults = this.client.settings.get("default");
-    const settings = message.guild ? this.client.getSettings(message.guild.id) : defaults;
+    const settings = await message.guild.getConfig();
     message.settings = settings;
     
     const level = this.client.permlevel(message);

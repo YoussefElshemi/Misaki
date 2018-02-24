@@ -1,4 +1,6 @@
 const { Structures } = require("discord.js");
+const reminders = require("../models/reminders");
+const score = require("../models/score");
 
 module.exports = Structures.extend("GuildMember", DiscordGuildMember => {
   return class GuildMember extends DiscordGuildMember {
@@ -8,15 +10,19 @@ module.exports = Structures.extend("GuildMember", DiscordGuildMember => {
       this.fullId = `${this.guild.id}-${this.id}`;
     }
 
-    get reminders() {
-      const reminderList = this.client.reminders.findAll("id", this.id);
+    async reminders() {
+      const reminderList = await reminders.findAll({ where: { userid: this.id } });
       if (!reminderList) return false;
       return reminderList;
     }
 
-    get score() {
-      if (!this.client.points.get(this.fullId)) return { points: 0, level: 0, user: this.id, guild: this.guild.id, daily: 1504120109 };
-      return this.client.points.get(this.fullId);
+    async createReminder(id, userid, guildid, reminder, timestamp) {
+      await reminders.create({ id, userid, guildid, reminder, timestamp });
+    }
+
+    async score() {
+      const scores = await score.findById(this.fullId);
+      return scores;
     }
 
     get inventory() {

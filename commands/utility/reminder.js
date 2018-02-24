@@ -16,18 +16,13 @@ class Reminder extends Command {
 
   async run(message, args, level) { // eslint-disable-line no-unused-vars
     if (args.length === 0) {
-      const reminders = message.member.reminders;
+      const reminders = await message.member.reminders();
       if (reminders.length === 0) return message.response(undefined, "You do not have any reminders set.");
-      else return message.channel.send("**Your Reminders:**\n" + reminders.map(r => `${r.reminder} - ${moment(r.reminderTimestamp).fromNow()}`).join("\n"));
+      else return message.channel.send("**Your Reminders:**\n" + reminders.map(r => `${r.reminder} - ${moment(Number(r.timestamp)).fromNow()}`).join("\n"));
     }
     const blah = await this.regCheck(args.join(" "));
     if (!blah) return message.response(undefined, "Invalid Command usage, you must supply a reminder message and duration e.g; `Do the laundry in 20 minutes`.");
-    this.client.reminders.set(`${message.author.id}-${message.createdTimestamp + ms(blah.split("#")[1])}`, {
-      id: message.author.id,
-      guildid: message.guild.id,
-      reminder: blah.split("#")[0],
-      reminderTimestamp: message.createdTimestamp + ms(blah.split("#")[1])
-    });
+    message.member.createReminder(`${message.author.id}-${message.createdTimestamp + ms(blah.split("#")[1])}`, message.author.id, message.guild.id, blah.split("#")[0], message.createdTimestamp + ms(blah.split("#")[1]));
 
     message.channel.send(`I will remind you to \`${blah.split("#")[0]}\`, ${blah.split("#")[1]} from now.`);
   }
