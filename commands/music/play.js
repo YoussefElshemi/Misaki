@@ -3,8 +3,7 @@ const Command = require(`${process.cwd()}/base/Command.js`);
 const { MessageEmbed } = require("discord.js");
 const ytapi = require("simple-youtube-api"); 
 const handleVideo = require("../../modules/MusicHandling.js");
-const youtube = new ytapi("API KEY"); 
-const embed = require("../../modules/Embeds.js");
+const youtube = new ytapi("AIzaSyCqeZHQu2R-LrkPolNH_kfszTUjp3oUPls"); 
 
 class Play extends Command {
   constructor(client) {
@@ -19,11 +18,11 @@ class Play extends Command {
   async run(message, args, level) { // eslint-disable-line no-unused-vars
     const url = args[0] ? args[0].replace(/<(.+)>/g, "$1") : "";
     const voiceChannel = message.member.voiceChannel;
-    if (!voiceChannel) return embed("noVoiceChannel", message);
-    if (!args[0]) return embed("noArgs", message);
+    if (!voiceChannel) return this.client.embed("noVoiceChannel", message);
+    if (!args[0]) return this.client.embed("noArgs", message);
     const permissions = voiceChannel.permissionsFor(message.client.user);
-    if (!permissions.has("CONNECT")) return embed("noPerms-CONNECT", message);
-    if (!permissions.has("SPEAK")) return embed("noPerms-SPEAK");
+    if (!permissions.has("CONNECT")) return this.client.embed("noPerms-CONNECT", message);
+    if (!permissions.has("SPEAK")) return this.client.embed("noPerms-SPEAK");
     if (url.match(/^https?:\/\/(www.youtube.com|youtube.com)\/playlist(.*)$/)) {
       const playlist = await youtube.getPlaylist(url);
       const videos = await playlist.getVideos();
