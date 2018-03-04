@@ -15,6 +15,7 @@ class Misaki extends Client {
     this.config = require(`${process.cwd()}/config.js`);
     this.logger = require(`${process.cwd()}/util/Logger`);
     this.responses = require(`${process.cwd()}/assets/responses.js`);
+    this.embed = require(`${process.cwd()}/modules/Embeds.js`);
     this.idiotAPI = new Idiot.Client(this.config.apiTokens.idiotToken, { dev: true });
 
     this.aliases = new Collection();
