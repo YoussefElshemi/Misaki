@@ -1,6 +1,14 @@
 const { MessageEmbed } = require("discord.js");
 
-const errorEmbeds = async (type, message, args) => { 
+/**
+ * @description Makes an embed with an error
+ * @param {String} type The type of error
+ * @param {DiscordMessage} message The message object
+ * @param {Array} [args = []] The arguments of the message
+ * @returns {MessageEmbed} Sends the embed to whichever channel the original message was sent it
+ */
+
+async function errorEmbeds(type, message, args) { 
   const embed = new MessageEmbed()
     .setColor(message.guild.me.roles.highest.color || 0x00AE86);
   switch (type) {
@@ -95,6 +103,6 @@ const errorEmbeds = async (type, message, args) => {
 
   }
   return message.channel.send(embed);
-};
+}
 
 module.exports = errorEmbeds;
