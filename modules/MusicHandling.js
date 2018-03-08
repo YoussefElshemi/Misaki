@@ -3,14 +3,15 @@ const ytdl = require("ytdl-core");
 const embed = require("./Embeds.js");
 
 const handleVideo = async (video, message, voiceChannel, playlist = false) => {
-  message.client.setInterval(() => {
+  const checker = message.client.setInterval(() => {
     if (voiceChannel.members.filter(c => !c.user.bot).size === 0) {
-      embed("inactiveCall", message);
+      message.client.embed("inactiveCall", message);
+      message.client.clearInterval(checker);
       message.client.playlists.get(message.guild.id).songs = [];
       message.client.playlists.get(message.guild.id).connection.dispatcher.end();
       return voiceChannel.leave();
     }
-  }, 3000);
+  }, 30000);
   const queue = message.client.playlists; 
   const song = {
     id: video.id,
