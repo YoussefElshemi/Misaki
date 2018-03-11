@@ -8,7 +8,7 @@ const { MessageEmbed } = require("discord.js");
  * @returns {MessageEmbed} Sends the embed to whichever channel the original message was sent it
  */
 
-async function errorEmbeds(type, message, args) { 
+async function embeds(type, message, args) { 
   const embed = new MessageEmbed()
     .setColor(message.guild.me.roles.highest.color || 0x00AE86);
   switch (type) {
@@ -105,4 +105,4 @@ async function errorEmbeds(type, message, args) {
   return message.channel.send(embed);
 }
 
-module.exports = errorEmbeds;
+module.exports = embeds;
