@@ -22,6 +22,10 @@
   },
   "homepage": "https://github.com/YorkAARGH/Misaki#readme",
   "dependencies": {
+
+    "node-opus": "^0.2.7",
+    "simple-youtube-api": "^5.0.1",
+    "ytdl-core": "^0.20.2",
     "chalk": "^2.3.0",
     "discord.js": "github:hydrabolt/discord.js#2e0048add1036c4648a99cd6a780280b6dd4ce9b",
     "enmap": "^0.4.2",
@@ -43,6 +47,8 @@
     "snekfetch": "^3.6.1"
   },
   "devDependencies": {
-    "eslint": "^4.17.0"
+    "eslint": "^4.17.0",    
+    "jsdoc": "^3.5.5"
   }
 }
+
