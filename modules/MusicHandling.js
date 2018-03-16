@@ -71,7 +71,7 @@ function play(guild, song) {
     queue.delete(guild.id);
     return;
   }
-  const dispatcher = queue.get(guild.id).connection.play(ytdl(song.url))
+  const dispatcher = queue.get(message.guild.id).connection.play(ytdl(song.url, {quality:"lowest", filter:"audioonly"}, {passes: 3, volume: message.guild.voiceConnection.volume || 0.2}))
     .on("end", () => {
       if (!serverQueue.loop) {
         queue.get(guild.id).songs.shift();
