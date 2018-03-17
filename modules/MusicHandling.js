@@ -3,15 +3,15 @@ const ytdl = require("ytdl-core");
 const embed = require("./Embeds.js");
 
 const handleVideo = async (video, message, voiceChannel, playlist = false) => {
-  const checker = message.client.setInterval(() => {
-    if (voiceChannel.members.filter(c => !c.user.bot).size === 0) {
+  const checker = message.client.setInterval(() => { // check if there is any in the call, if not leave
+    if (voiceChannel.members.filter(c => !c.user.bot).size === 0) { // if no real users, it will carry on
       message.client.embed("inactiveCall", message);
       message.client.clearInterval(checker);
-      message.client.playlists.get(message.guild.id).songs = [];
-      message.client.playlists.get(message.guild.id).connection.dispatcher.end();
-      return voiceChannel.leave();
+      message.client.playlists.get(message.guild.id).songs = []; // clear the queue
+      message.client.playlists.get(message.guild.id).connection.dispatcher.end(); // end the dispatcher
+      return voiceChannel.leave(); // leave the voice channel
     }
-  }, 30000);
+  }, 30000); // runs every 30 seconds
   const queue = message.client.playlists; 
   const song = {
     id: video.id,
@@ -24,9 +24,9 @@ const handleVideo = async (video, message, voiceChannel, playlist = false) => {
     durations: video.duration.seconds,
     thumbnail: video.thumbnails.default.url,
     author: message.author.username,
-  };
-  if (!queue.has(message.guild.id)) {
-    const queueConstruct = {
+  }; // create the object for each song 
+  if (!queue.has(message.guild.id)) { // check if there isn't a queue for the guild already
+    const queueConstruct = { // create the object with information we require
       textChannel: message.channel,
       voiceChannel: voiceChannel,
       connection: null,
@@ -34,14 +34,14 @@ const handleVideo = async (video, message, voiceChannel, playlist = false) => {
       volume: 5,
       playing: true,
       loop: false
-    };
-    queue.set(message.guild.id, queueConstruct);
-    queueConstruct.songs.push(song);
+    }; 
+    queue.set(message.guild.id, queueConstruct); // set the object we just made
+    queueConstruct.songs.push(song); // push the song object so we can use it later
     try {
-      const connection = await voiceChannel.join();
-      queueConstruct.connection = connection;
-      play(message.guild, queueConstruct.songs[0]);
-    } catch (error) {
+      const connection = await voiceChannel.join(); // join the voice channel
+      queueConstruct.connection = connection; // set the connection to be used globally
+      play(message.guild, queueConstruct.songs[0]); // play the first song in the queue
+    } catch (error) { // any errors, HANDLED
       queue.delete(message.guild.id);
       const embed = new MessageEmbed()
         .setAuthor("Error")
@@ -50,8 +50,8 @@ const handleVideo = async (video, message, voiceChannel, playlist = false) => {
       return message.channel.send(embed);
     }
   } else {
-    queue.get(message.guild.id).songs.push(song);
-    if (playlist) return;
+    queue.get(message.guild.id).songs.push(song); // if the queue exists, it'll push the song object
+    if (playlist) return; // if it's a playlist it wont do this so doesn't spam adding songs
     else {
       const embed = new MessageEmbed()
         .setAuthor("Song added!")
@@ -67,29 +67,29 @@ function play(guild, song) {
   const queue = guild.client.playlists;
   const serverQueue = queue.get(guild.id);
   if (!song) {
-    serverQueue.voiceChannel.leave();
-    queue.delete(guild.id);
+    serverQueue.voiceChannel.leave(); // if there are no songs leave the channel
+    queue.delete(guild.id); // and also remove the guild from the collection
     return;
   }
-  const dispatcher = queue.get(message.guild.id).connection.play(ytdl(song.url, {quality:"lowest", filter:"audioonly"}, {passes: 3, volume: message.guild.voiceConnection.volume || 0.2}))
-    .on("end", () => {
-      if (!serverQueue.loop) {
-        queue.get(guild.id).songs.shift();
-        setTimeout(() => {
-          play(guild, queue.get(guild.id).songs[0]);
+  const dispatcher = queue.get(message.guild.id).connection.play(ytdl(song.url, {quality:"lowest", filter:"audioonly"}, {passes: 3, volume: message.guild.voiceConnection.volume || 0.2})) // play the song
+    .on("end", () => { // when the song ends
+      if (!serverQueue.loop) { // if its not looped
+        queue.get(guild.id).songs.shift(); // remove the first item from the queue, eg. first song
+        setTimeout(() => { // wait 250ms before playing a song due to songs skipping
+          play(guild, queue.get(guild.id).songs[0]); // play the song
         }, 250); 
-      } else {
-        setTimeout(() => {
-          play(guild, queue.get(guild.id).songs[0]);
+      } else { // if it is looped it doens't remove the first item
+        setTimeout(() => {  // wait 250ms before playing a song due to songs skipping
+          play(guild, queue.get(guild.id).songs[0]); // play the song
         }, 250);		   
       }
     });
-  dispatcher.setVolumeLogarithmic(queue.get(guild.id).volume / 5);
-  const songdurm = String(song.durationm).padStart(2, "0");
-  const songdurh = String(song.durationh).padStart(2, "0");
-  const songdurs = String(song.durations).padStart(2, "0");
+  dispatcher.setVolumeLogarithmic(queue.get(guild.id).volume / 5); // set the volume of the dispatcher
+  const songdurm = String(song.durationm).padStart(2, "0"); // format the time
+  const songdurh = String(song.durationh).padStart(2, "0"); // same ^
+  const songdurs = String(song.durations).padStart(2, "0"); // same ^^
   
-  const embed = new MessageEmbed()
+  const embed = new MessageEmbed() // create a message embed with all of the information
     .setTitle(song.channel)
     .setURL(song.channelurl)
     .setThumbnail(song.thumbnail)
@@ -100,4 +100,4 @@ function play(guild, song) {
   if (!serverQueue.loop) return queue.get(guild.id).textChannel.send(embed);
 }
 
-module.exports = handleVideo;
+module.exports = handleVideo; // export the function
